@@ -16,12 +16,22 @@ namespace TheKingdom
         static RenderWindow Win;
         static SceneManager Scenes;
         static SoundManager SoundEngine = new SoundManager();
-
+        
         static void Main(string[] args)
         {
             GlobalData.LoadSettings();
-         
-            Win = new RenderWindow(new VideoMode((uint)GlobalData.Screen_Width, (uint)GlobalData.Screen_Height), "The Kingdom", Styles.Titlebar);
+            SoundEngine.MusicVolume = GlobalData.MusicVolume;
+            SoundEngine.SoundVolume = GlobalData.SoundVolume;
+
+            if (GlobalData.Fullscreen == 0)
+            {
+                Win = new RenderWindow(new VideoMode((uint)GlobalData.Screen_Width, (uint)GlobalData.Screen_Height), "The Kingdom", Styles.Titlebar);
+            }
+            else
+            {
+                Win = new RenderWindow(new VideoMode((uint)GlobalData.Screen_Width, (uint)GlobalData.Screen_Height), "The Kingdom", Styles.Fullscreen);
+            }
+
             Win.Resized += (sender, e) =>
             {
                 GlobalData.Screen_Width = (int)e.Width;
@@ -30,16 +40,16 @@ namespace TheKingdom
             };
 
             BrowserManager.StartBrowserManagerService();
-            BrowserManager.CheckContext += BrowserManager_CheckContext;                
-
+            BrowserManager.CheckContext += BrowserManager_CheckContext;
+            Win.KeyPressed += (Sender, e) => { if (e.Alt && e.Code == Keyboard.Key.F4) { GlobalData.Closing = true; } };
             Win.Closed += (Sender, e) => Win.Close();
             
-            Scenes = new SceneManager(Win);
+            Scenes = new SceneManager(Win);            
             TimeKeeper.Start();
             SoundEngine.Play();
- 
+
             while (Win.IsOpen() && !GlobalData.Closing)
-            {
+            {                
                 Win.DispatchEvents();
                 Win.Clear();
                 Scenes.Draw();
@@ -56,15 +66,15 @@ namespace TheKingdom
             Win.MouseMoved += (s, se) => BrowserManager.MouseMove(se.X, se.Y);
             Win.MouseButtonPressed += (s, se) => BrowserManager.MouseDown(se.X, se.Y, se.Button);
             Win.MouseButtonReleased += (s, se) => BrowserManager.MouseUp();
-            Win.KeyPressed += (s, se) => BrowserManager.InjectKey(se.Code, Mouse.GetPosition(Win).X, Mouse.GetPosition(Win).Y);
-
-            Scenes.Start();
+            Win.KeyPressed += (s, se) => BrowserManager.InjectKey(se.Code, Mouse.GetPosition(Win).X, Mouse.GetPosition(Win).Y);            
 
             TabTypes.StaticTab t = new TabTypes.StaticTab(0, "file:///UI/test.html", 300, 200, 400, 400);
             t.Clickable = true;
             t.DragEnabled = true;
             t.KeyEvents = true;
-            BrowserManager.NewTab(t);            
+            
+            BrowserManager.NewTab(t);
+            SceneManager.Start();            
         }
     }
 }

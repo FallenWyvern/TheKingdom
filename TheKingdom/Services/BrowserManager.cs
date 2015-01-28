@@ -194,7 +194,7 @@ namespace SFML.Web
         /// <param name="y"></param>
         /// <returns></returns>
         public static BaseTab FindTabByClick(int x, int y)
-        {
+        {            
             foreach (BaseTab t in Tabs.ToList())
             {
                 if (t.MouseOver(x, y))
@@ -215,16 +215,19 @@ namespace SFML.Web
         {
             if (UI != null && !DraggingUI)
             {
-                WebCore.QueueWork(UI.MyTab, () => { UI.MyTab.InjectMouseMove(x, y); });                
+                WebCore.QueueWork(UI.MyTab, () => { UI.MyTab.FocusView(); UI.MyTab.InjectMouseMove(x, y); });                                
             }
 
+            if (Tabs.Count == 0) return;
+
             if (Mouse.IsButtonPressed(Mouse.Button.Right)) { return; }
+            
             DraggingUI = false;
             foreach (BaseTab t in Tabs.ToList())
             {
                 if (t.MouseOver(x, y) && t.Clickable && !t.closing)
                 {
-                    WebCore.QueueWork(t.MyTab, () => { t.MyTab.InjectMouseMove((int)(x - t.View.Position.X), (int)(y - t.View.Position.Y)); });                                    
+                    WebCore.QueueWork(t.MyTab, () => { t.MyTab.FocusView(); t.MyTab.InjectMouseMove((int)(x - t.View.Position.X), (int)(y - t.View.Position.Y)); });                                    
                     DraggingUI = true;
                 }
             }
@@ -244,6 +247,8 @@ namespace SFML.Web
                     catch { Console.WriteLine("UI Cannot be moved"); }
                 }, null);
             }
+
+            if (Tabs.Count == 0) return;
 
             foreach (BaseTab t in Tabs.ToList())
             {
@@ -277,6 +282,8 @@ namespace SFML.Web
                 }, null);
             }
 
+            if (Tabs.Count == 0) return;
+
             List<BaseTab> tablist = Tabs.ToList();
             tablist.Reverse();
 
@@ -297,7 +304,8 @@ namespace SFML.Web
             }
 
             if (Mouse.IsButtonPressed(Mouse.Button.Right))
-            {                
+            {
+                if (Tabs.Count == 0) return;
                 foreach (BaseTab t in tablist)
                 {
                     if (t.MouseOver(x, y))
@@ -441,7 +449,7 @@ namespace SFML.Web
                 LocalStorage = true,
             });
 
-            MyTab = WebCore.CreateWebView(browserwidth, browserheight, session, WebViewType.Offscreen);
+            MyTab = WebCore.CreateWebView(browserwidth, browserheight, session, WebViewType.Offscreen);            
             MyTab.IsTransparent = true;
                         
             MyTab.Source = new Uri(URL);

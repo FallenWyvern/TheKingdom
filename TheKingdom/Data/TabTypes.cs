@@ -119,19 +119,19 @@ namespace TheKingdom
             public override void Callback(string message)
             {
                 switch (message)
-                {
+                {                    
                     case "newgame":
-                        GlobalData.GameInProgress = true;
-                        MyTab.BeginInvoke((ThreadStart)delegate()
-                        {
-                            ExecuteJavascript(this, new EventArgs());
-                        });                        
-                        SceneManager.ChangeScene(4);                        
+                        GlobalData.GameInProgress = true;                                      
+                        SceneManager.ChangeScene(5);                        
                         break;
                     case "loadgame":
+                        SceneManager.ChangeScene(2);
+                        break;
+                    case "savegame":
+                        SceneManager.ChangeScene(3);
                         break;
                     case "settings":
-                        SceneManager.ChangeScene(3);
+                        SceneManager.ChangeScene(4);
                         break;
                     case "close":
                         TheKingdom.GlobalData.Closing = true;
@@ -151,10 +151,7 @@ namespace TheKingdom
                         return;
 
                     using (window)
-                    {
-                        string newOrContinue = "";                        
-                        newOrContinue = GlobalData.GameInProgress ? "Continue" : "New";
-                        window.InvokeAsync("setNewButton", newOrContinue);
+                    {                        
                     }
                 });
             }
@@ -183,7 +180,59 @@ namespace TheKingdom
 
                 using (window)
                 {                    
-                    window.InvokeAsync("setDivText", GlobalData.Screen_Width + "x" + GlobalData.Screen_Height);
+                    window.InvokeAsync("setData", "false", GlobalData.MusicVolume, GlobalData.SoundVolume, GlobalData.Screen_Width + "x" + GlobalData.Screen_Height);
+                }
+            }
+
+            public override void Callback(string message)
+            {
+                switch (message)
+                {                                            
+                    case "back":
+                        SceneManager.ChangeScene(0);
+                        break;
+                    default:
+                        try
+                        {
+                            string[] parameters = message.ToLower().Split('&');
+                            
+                            GlobalData.Screen_Width = Convert.ToInt32(parameters[0].Split('=')[1].Split('x')[0]);                            
+                            GlobalData.Screen_Height = Convert.ToInt32(parameters[0].Split('=')[1].Split('x')[1]);                            
+                            GlobalData.Fullscreen = Convert.ToInt32(parameters[1].Split('=')[1]);                            
+                            GlobalData.MusicVolume = Convert.ToInt32(parameters[2].Split('=')[1]);                            
+                            GlobalData.SoundVolume = Convert.ToInt32(parameters[3].Split('=')[1]);                            
+                            GlobalData.SaveSettings();
+                        }
+                        catch (Exception CallbackException) { Console.Write("Error: " + CallbackException.Message); }
+                        break;
+                }
+            }
+        }
+
+        public class LoadTab : BaseTab
+        {
+            public LoadTab(int id, string URL, int w, int h, int x, int y)
+                : base(id, URL, w, h, x, y)
+            {
+                MyTab.LoadingFrameComplete += (sender, e) =>
+                {
+                    MyTab.BeginInvoke((ThreadStart)delegate()
+                    {                        
+                        ExecuteJavascript(this, new EventArgs());
+                    });
+                };
+            }
+
+            private void ExecuteJavascript(object sender, EventArgs eventArgs)
+            {
+                JSObject window = MyTab.ExecuteJavascriptWithResult("window");
+
+                if (window == null)
+                    return;
+
+                using (window)
+                {
+                    //window.InvokeAsync("setData", "false", GlobalData.MusicVolume, GlobalData.SoundVolume, GlobalData.Screen_Width + "x" + GlobalData.Screen_Height);
                 }
             }
 
@@ -191,9 +240,47 @@ namespace TheKingdom
             {
                 switch (message)
                 {
-                    case "resolution":
-
+                    case "back":
+                        SceneManager.ChangeScene(0);
                         break;
+                    default:                        
+                        break;
+                }
+            }
+        }
+
+        public class SaveTab : BaseTab
+        {
+            public SaveTab(int id, string URL, int w, int h, int x, int y)
+                : base(id, URL, w, h, x, y)
+            {
+                MyTab.LoadingFrameComplete += (sender, e) =>
+                {
+                    MyTab.BeginInvoke((ThreadStart)delegate()
+                    {
+                        ExecuteJavascript(this, new EventArgs());
+                        SceneManager.ChangeScene(0);
+                    });
+                };
+            }
+
+            private void ExecuteJavascript(object sender, EventArgs eventArgs)
+            {
+                JSObject window = MyTab.ExecuteJavascriptWithResult("window");
+
+                if (window == null)
+                    return;
+
+                using (window)
+                {
+                    //window.InvokeAsync("setData", "false", GlobalData.MusicVolume, GlobalData.SoundVolume, GlobalData.Screen_Width + "x" + GlobalData.Screen_Height);
+                }
+            }
+
+            public override void Callback(string message)
+            {
+                switch (message)
+                {
                     case "back":
                         SceneManager.ChangeScene(0);
                         break;
@@ -221,9 +308,6 @@ namespace TheKingdom
                 
                 MyTab.LoadingFrameComplete += (sender, e) =>
                 {
-                    Buildings.Tavern myTavern = new Buildings.Tavern();
-                    GlobalData.CityBuildings.Add(myTavern);                    
-                    BuildingUpgrades.TavernUpgrade Upgrade = new BuildingUpgrades.TavernUpgrade(myTavern, UpgradeTypes.TavernFoodQuality);
                     t.Start();                    
                 };
             }

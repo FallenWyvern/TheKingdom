@@ -84,13 +84,13 @@ namespace TheKingdom
 
         public static void Update()
         {
-            if (SceneManager.state < 4)
+            if (SceneManager.state < 5)
             {
                 if (t.Enabled) t.Stop();
                 return;
             }
 
-            if (SceneManager.state > 3)
+            if (SceneManager.state > 4)
             {
                 foreach (BaseBuilding b in GlobalData.CityBuildings)
                 {

@@ -31,12 +31,11 @@
 		window.alert(data);		
 	}
 	
-	function setData(d1,d2,d3,d4,resolution){
+	function setData(fs, mVol, sVol, resolution){		
+		$("#music_volume").val(mVol);
+		$("#game_volume").val(sVol);
 		
-		$("#music_volume").val(d3);
-		$("#game_volume").val(d4);
-		
-		if(d1){
+		if(fs){
 			$("#fullscreen").prop("checked", true)
 		}else{
 			$("#windowed").prop("checked", true)
@@ -53,9 +52,10 @@
 	
 	<script type="text/javascript">function setDivText(s){$("#msgDiv").text(s);} $(document).ready(function () {setDivText("");});</script>	
 	</head>
-	<body style="background:rgba(0,0,0,0.4);">		
-	
+	<body style="background:rgba(0,0,0,0.0);">		
+		<h1 class="center" style="color:#fff;"> Changes Require Restart </h1>
 		<form id="myform">
+		<div  class="center" >
 		<div class="col-md-5 col-md-offset-3">
 			
 			<div class="panel panel-default">
@@ -70,9 +70,9 @@
 							  </button>
 							  <ul id="resolution" class="dropdown-menu col-md-12 col-sm-12" role="menu">
 								<li class="center"><a href="#">800X600</a></li>
-								<li class="center"><a href="#">800X600</a></li>
-								<li class="center"><a href="#">800X600</a></li>
-								<li class="center"><a href="#">800X600</a></li>
+								<li class="center"><a href="#">1280x720</a></li>
+								<li class="center"><a href="#">1440x900</a></li>
+								<li class="center"><a href="#">1920x1080</a></li>
 								
 							  </ul>
 							  <input type="hidden" name="resolution"/>
@@ -120,5 +120,6 @@
 		</form>
 		
 		<div id="msgDiv" style='color:#ff0000; background-color:#222222;' onclick="window.alert('resolution')"></div>		
+		</div>
 	</body>
 </html>

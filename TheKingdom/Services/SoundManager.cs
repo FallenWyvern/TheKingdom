@@ -10,12 +10,28 @@ namespace TheKingdom
 {
     public class SoundManager
     {
-        Music bgMusic = new Music("./Music/bgmusic.ogg");    
+
+        Music bgMusic = new Music("./Music/bgmusic.ogg");
+        public int MusicVolume = 100;
+        public int SoundVolume = 100;
+        
         public void Play()
-        {            
-            bgMusic.Volume = 100;            
+        {
+            bgMusic.Volume = MusicVolume;            
             bgMusic.Play();
             bgMusic.Loop = false;            
+        }
+
+        public bool MusicPlaying()
+        {
+            if (bgMusic.Status == SoundStatus.Playing)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void Stop()
