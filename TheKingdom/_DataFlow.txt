@@ -1,0 +1,112 @@
+﻿The Application starts in Program.cs
+1. Load settings from kingdom.ini
+2. Set the renderwindow and open it.
+3. Start the BrowserManager Service
+	--  This has an event subscribed when the 
+		Manager service begins, to allow the
+		content to start threaded. This avoids
+		hanging the window.
+4. Start the SceneManager Service
+5. Start the SoundEngine Service
+
+Then the main application loop begins. That is, while the window is open,
+1. Dispatch Events
+2. Clear buffer
+3. Draw the Scene
+4. Update the Time
+5. Display content
+
+If the window ever closes, it then stops the sound service and shuts the browsermanager down.
+
+						-------------------------------------------
+											SFML.Web
+BrowserManager :
+	StartBrowserManagerService() -> Does what it says on the tin. If you're subscribed to the
+	CheckContext event, you can hook into the manager once it's started.
+
+	EndBrowserManagerService() -> Same, but reversed. It ends all tabs to prevent memory leaks.
+
+	NewTab -> Creates and manages a new tab on the SyncContext. This has an overload for new
+	tabs as well as already created ones.
+
+	Clean -> Removes ALL tabs. Used during closing.
+
+	FindTabByID / FindTabByClick -> Gets a tab either by it's ID or where the mouse is. If you
+	get it by mouse location and click, it gets the top most one.
+
+	MouseUp/MouseMove/MouseDown -> Sends events to tabs. If the tab is draggable, right click can
+	drag it. If it's not clickable, it's just for looks.
+
+	Inject Key -> Injects a keypress to the tab. This is good, but I want to move it into the
+	tab itself so that I can specify keys per tab.
+
+	Destroy -> Destroys a tab by ID.
+
+BaseTab :
+	The class that all tabs are based upon. 
+
+	BaseTab -> Creates the tab.
+
+	Callback -> All tabs can recieve Window.Alert from JS. This is how you parse it, by overriding.
+
+	UpdateTexture -> Super dangerous code. Don't touch it.
+
+	Draw -> Handles Draw and Dragging of tabs.
+
+	MouseOver -> boolean for other methods to check if the mouse is over the tab.
+
+	Move -> Handles movement but called during Draw.
+
+	Dispose -> Because of the nature of Awesomium, this is needed.
+
+
+						-------------------------------------------
+
+SceneManager :
+	The Scene Manager class handles the main full screen UI panels, state switching and passes the
+	UI stuff back to the Window. First it draws all tabs from BrowserManager.Tabs, then the UI.
+
+SoundManager:
+	Barebones. Plays one, hardcoded song.
+
+TimeKeeper:
+	Important static class. Handles pausing and the progression of time in game. Each frame it is
+	called from Program.cs and if the gamestate is higher than 3, time is allowed to progress.
+	Tracks Hours/Days/Weeks/Months/Years and has a separate class used for triggering events at
+	specific times.
+
+						-------------------------------------------
+
+GlobalData : 
+	Holds all settings, loading and saving of settings. Also holds all Game Objects.
+
+TabTypes :
+	Each and every unique form of web page is located here. 
+	You can use MyTab.LoadingFrameComplete += (sender, e) => { }); to configure onStart
+	and use the following to send information into JS:
+
+	WebCore.QueueWork(MyTab, () =>
+    {
+		JSObject window = MyTab.ExecuteJavascriptWithResult("window");
+
+		if (window == null)
+			return;
+
+		using (window)
+		{
+		}
+	});
+
+	Override the "Callback(string Message)" function to get information back FROM JS.
+
+Buildings :
+	Probably the most complicated class so far, containing Upgrades for Buildings as well as the
+	Buildings themselves.
+
+	BaseUpgrade and BaseBuildings are the classes you inherit the later forms for.
+	Buildings.BUILDINGNAME to make new buildings and Upgrades.BUILDINGNAME (ie :
+	Upgrades.TavernUpgrades) to get specific upgrades. Override OnAdd in Upgrades to
+	specify what happens when an upgrade is added.
+
+	There are also two enums. Building Type for each type of building, and UpgradeType
+	which is used as a 'tag' to say what upgrades a building has.

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>		
+	
+	<script src="jquery-2.1.3.min.js"></script>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+	
+	
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	
+	<script>
+	
+	$(document).ready(function(){
+		$("#resolution li").on("click",function(e){
+		
+			var resolution_text=$(this).text();
+			$("#resolution_selected_text").text(resolution_text);
+			$("input[name='resolution']").val(resolution_text);
+		});
+	});
+	
+	</script>
+	
+	<script>
+	
+	function sendData(){
+		var data = $("#myform").serialize();
+		console.log(data);
+		window.alert(data);		
+	}
+	
+	function setData(d1,d2,d3,d4,resolution){
+		
+		$("#music_volume").val(d3);
+		$("#game_volume").val(d4);
+		
+		if(d1){
+			$("#fullscreen").prop("checked", true)
+		}else{
+			$("#windowed").prop("checked", true)
+		}
+		
+		
+		$("#resolution_selected_text").text(resolution);
+		$("input[name='resolution']").val(resolution);
+	}
+	
+	</script>
+	
+	
+	
+	<script type="text/javascript">function setDivText(s){$("#msgDiv").text(s);} $(document).ready(function () {setDivText("");});</script>	
+	</head>
+	<body style="background:rgba(0,0,0,0.4);">		
+	
+		<form id="myform">
+		<div class="col-md-5 col-md-offset-3">
+			
+			<div class="panel panel-default">
+				<div class="panel-body">
+			
+				<div class="row">
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						
+						<div class="btn-group col-md-12">
+							  <button type="button" class="btn btn-default dropdown-toggle col-md-12" data-toggle="dropdown" aria-expanded="false">
+								Resolution
+							  </button>
+							  <ul id="resolution" class="dropdown-menu col-md-12 col-sm-12" role="menu">
+								<li class="center"><a href="#">800X600</a></li>
+								<li class="center"><a href="#">800X600</a></li>
+								<li class="center"><a href="#">800X600</a></li>
+								<li class="center"><a href="#">800X600</a></li>
+								
+							  </ul>
+							  <input type="hidden" name="resolution"/>
+						</div>
+					
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						<h3 class="center" id="resolution_selected_text" ></h3>
+					</div>
+						</div>
+				
+				<div class="row">
+					<div class="col-md-4 col-md-offset-2 center">
+						<h4>Fullscreen</h4>
+						<input type="radio" id="fullscreen" name="window_mode" value="1"/>
+					</div>
+					<div class="col-md-4 center">
+						<h4>Windowed</h4>
+						<input type="radio" id="windowed" name="window_mode" value="0"/>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6 margin center">
+						<h4>Music Volume</h4>
+						 <input type="range" id="music_volume" name="music_volume" min="0" max="100" step="1">
+					</div>
+					<div class="col-md-6 margin center">
+						<h4>Game Volume</h4>
+						 <input type="range" id="game_volume" name="game_volume" min="0" max="100" step="1">
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12 margin center">
+						<a class="btn btn-default col-md-2  col-md-offset-4" onclick="window.alert('back');">Back</a>
+						<a class="btn btn-default col-md-2" onclick="sendData()">Save</a>
+					</div>
+				</div>
+				
+				</div>
+			</div>
+
+		</div>
+		</form>
+		
+		<div id="msgDiv" style='color:#ff0000; background-color:#222222;' onclick="window.alert('resolution')"></div>		
+	</body>
+</html>

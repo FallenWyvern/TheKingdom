@@ -1,0 +1,28 @@
+<html>
+	<head>		
+	<script type="text/javascript">
+		function myMethod() {
+			document.write("In myMethod, calling .NET but expecting no return value.<br/>");
+			jsobject.callNETNoReturn();
+		}
+
+		function myMethodExpectingReturn() {
+			document.write("In myMethodExpectingReturn, calling .NET and expecting return value.<br/>");
+			var returnVal2 = jsobject.callNETWithReturn("foo");
+			document.write("Got value from .NET: " + returnVal2 + "<br/>");
+		}
+
+		function myMethodProvidingReturn(whatToReturn) {
+			var returnVal =  whatToReturn + "bar";
+			document.write("Returning '" + returnVal + "' to .NET.");
+			return returnVal;
+		}
+	</script>
+	</head>
+	<body bgcolor="#111111">
+		<p style='color:#fff'>This is a test</p>
+		<button type="button" onclick="window.alert('close');">Close</button>
+		<button type="button" onclick="window.alert('create');">Create Static</button></br>
+		<button type="button" onclick="window.alert('response');">Create Dynamic</button>
+	</body>
+</html>
