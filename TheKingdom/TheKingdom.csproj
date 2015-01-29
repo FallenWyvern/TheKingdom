@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\EventData.cs" />
     <Compile Include="Services\BrowserManager.cs" />
     <Compile Include="Data\Buildings.cs" />
     <Compile Include="Data\GlobalData.cs" />

@@ -18,6 +18,10 @@ namespace TheKingdom
         public static bool Closing = false;
         
         public static List<BaseBuilding> CityBuildings = new List<BaseBuilding>();
+        public static List<BaseEvent> CityEvents = new List<BaseEvent>();
+
+        public static int Visitors = 0;
+        public static int Citizens = 0;        
 
         public static void LoadSettings()
         {

@@ -308,7 +308,11 @@ namespace TheKingdom
                 
                 MyTab.LoadingFrameComplete += (sender, e) =>
                 {
-                    t.Start();                    
+                    t.Start();
+                    TavernDebugTab tdbt = new TavernDebugTab(52, "file:///UI/TavernTest.html", 300, 400, 500, 500);
+                    tdbt.Clickable = true;
+                    tdbt.DragEnabled = true;                    
+                    BrowserManager.NewTab(tdbt);
                 };
             }
 
@@ -327,7 +331,9 @@ namespace TheKingdom
                         window.InvokeAsync("setDays", "Day: " + TimeKeeper.days);
                         window.InvokeAsync("setWeeks", "Week: " + TimeKeeper.weeks);
                         window.InvokeAsync("setMonths", "Month: " + TimeKeeper.months);
-                        window.InvokeAsync("setYears", "Year: " + TimeKeeper.years);                        
+                        window.InvokeAsync("setYears", "Year: " + TimeKeeper.years);
+                        window.InvokeAsync("setVisitors", "Travellers: " + GlobalData.Visitors);
+                        window.InvokeAsync("setCitizens", "Citizens: " + GlobalData.Citizens);                        
                     }
                 });
             }
@@ -342,6 +348,64 @@ namespace TheKingdom
                     default:
                         break;
                 }
+            }
+        }
+
+        public class TavernDebugTab : BaseTab
+        {
+            Buildings.Tavern NewTav = new Buildings.Tavern();
+
+            public TavernDebugTab(int id, string URL, int w, int h, int x, int y)
+                : base(id, URL, w, h, x, y)
+            {
+                MyTab.LoadingFrameComplete += (sender, e) =>
+                {                  
+                };
+            }
+
+            public override void Callback(string message)
+            {                
+                switch (message)
+                {
+                    case "tav":
+                        GlobalData.CityBuildings.Add(NewTav);
+                        break;
+                    case "up1":
+                        BuildingUpgrades.TavernUpgrade up1 = new BuildingUpgrades.TavernUpgrade(NewTav, UpgradeTypes.TavernCapacityUpgrade);
+                        break;
+                    case "up2":
+                        BuildingUpgrades.TavernUpgrade up2 = new BuildingUpgrades.TavernUpgrade(NewTav, UpgradeTypes.TavernEntertainmentQuality);
+                        break;
+                    case "up3":
+                        BuildingUpgrades.TavernUpgrade up3 = new BuildingUpgrades.TavernUpgrade(NewTav, UpgradeTypes.TavernFoodQuality);
+                        break;
+                    case "addVisitorEvent":
+                        GainTravellerEvent gainTraveller = new GainTravellerEvent(new Check(TimeKeeper.Phase.None), 5, true);
+                        GlobalData.CityEvents.Add(gainTraveller);
+
+                        LoseTravellerEvent loseTraveller1 = new LoseTravellerEvent(new Check(TimeKeeper.Phase.Dawn), 8, true);
+                        LoseTravellerEvent loseTraveller2 = new LoseTravellerEvent(new Check(TimeKeeper.Phase.Morning), 8, true);                        
+                        GlobalData.CityEvents.Add(loseTraveller1);
+                        GlobalData.CityEvents.Add(loseTraveller2);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            private void ExecuteJavascript(object sender, EventArgs eventArgs)
+            {
+                WebCore.QueueWork(MyTab, () =>
+                {
+                    JSObject window = MyTab.ExecuteJavascriptWithResult("window");
+
+                    if (window == null)
+                        return;
+
+                    using (window)
+                    {
+                    }
+                });
             }
         }
     }

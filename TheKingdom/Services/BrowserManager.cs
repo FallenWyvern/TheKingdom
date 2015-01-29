@@ -406,6 +406,7 @@ namespace SFML.Web
         public bool KeyEvents = true;  // Is this view typeable.
         public bool mouseDrag = false;  // Is this view being dragged.        
         public bool DragEnabled = false;    // Can this view be dragged.
+        public bool Active = true;
         public bool opened = false;         // Is the tab open yet. Not being open causes white blank tabs.        
         public uint dragOffsetX = 0;    // Where was the mouse when dragging began.
         public uint dragOffsetY = 0;    // ^
@@ -463,8 +464,9 @@ namespace SFML.Web
             }; 
 
             s.Updated += (sender, e) =>
-            {                
-                UpdateTexture();                
+            {
+                if (!Active) return;
+                UpdateTexture();
             };            
         }
 
@@ -497,6 +499,7 @@ namespace SFML.Web
         public Sprite Draw(RenderWindow win)
         {
             if (!opened) { System.Threading.Thread.Sleep(100); opened = true; }
+            if (!Active) return null;
             if (!closing)
             {                
                 if (mouseDrag && DragEnabled)

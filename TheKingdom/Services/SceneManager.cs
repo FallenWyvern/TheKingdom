@@ -44,24 +44,31 @@ namespace TheKingdom
         /// <param name="id"></param>
         public static void ChangeScene(int id)
         {
+            DisableAll();
+
             switch (id)
             {
                 case 0:
                     BrowserManager.UI = MainMenu;
+                    MainMenu.Active = true;                    
                     break;
                 case 1:                    
                     break;
                 case 2:
-                    BrowserManager.UI = LoadingTab;                    
+                    BrowserManager.UI = LoadingTab;
+                    LoadingTab.Active = true; 
                     break;
                 case 3:
                     BrowserManager.UI = SavingTab;
+                    SavingTab.Active = true; 
                     break;
                 case 4:
-                    BrowserManager.UI = Settings;                    
+                    BrowserManager.UI = Settings;
+                    Settings.Active = true; 
                     break;
                 case 5:
                     BrowserManager.UI = CityView;
+                    CityView.Active = true; 
                     break;
                 case 6:
                     break;
@@ -70,6 +77,15 @@ namespace TheKingdom
             }
             
             state = id;
+        }
+
+        private static void DisableAll()
+        {
+            MainMenu.Active = false;
+            Settings.Active = false;
+            CityView.Active = false;
+            LoadingTab.Active = false;
+            SavingTab.Active = false;
         }
 
         public void Draw()
@@ -91,7 +107,15 @@ namespace TheKingdom
                 {
                     try
                     {
-                        mainWindow.Draw(t.Draw(mainWindow));
+                        if (state > 4)
+                        {
+                            if (!t.Active) t.Active = true;
+                            mainWindow.Draw(t.Draw(mainWindow));
+                        }
+                        else
+                        {
+                            if (t.Active) t.Active = false;
+                        }
                     }
 
                     catch { }

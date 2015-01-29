@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace TheKingdom
 {
     public enum BuildingType { Tavern }
-    public enum UpgradeTypes { TavernCapacityUpgrade, TavernFoodQuality }
+    public enum UpgradeTypes { TavernCapacityUpgrade, TavernFoodQuality, TavernEntertainmentQuality }
 
     // Base class buildings are built from.
     public class BaseBuilding
@@ -99,6 +99,9 @@ namespace TheKingdom
                     case UpgradeTypes.TavernCapacityUpgrade:
                         Console.WriteLine("Upgrading Tavern Capacity");
                         break;
+                    case UpgradeTypes.TavernEntertainmentQuality:
+                        Console.WriteLine("Upgrading Tavern Entertainment");
+                        break;
                     case UpgradeTypes.TavernFoodQuality:
                         Console.WriteLine("Upgrading Food Quality");
                         break;
@@ -114,7 +117,8 @@ namespace TheKingdom
         {
             public int Capacity = 10;
             public int Patrons = 0;
-            Check c = new Check(TimeKeeper.Phase.None, 10, 0, 0, 0, 0);
+            public int Entertainment = 0;
+            public List<BaseEvent> TavernEvents = new List<BaseEvent>();
 
             public Tavern()
             {
@@ -123,6 +127,7 @@ namespace TheKingdom
 
             public override void Update()
             {                
+
             }            
 
             public void AddPatrons()
@@ -140,7 +145,9 @@ namespace TheKingdom
                 Patrons += adding;
                 Console.WriteLine(high + " " + low + " " + adding);
                 Console.WriteLine("Patrons: " + Patrons + " of " + Capacity);
-                Console.WriteLine("Adding " + adding + " to tavern.");                
+                Console.WriteLine("Adding " + adding + " to tavern.");
+
+                GlobalData.Visitors += adding;
             }            
         }        
     }

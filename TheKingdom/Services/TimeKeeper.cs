@@ -29,31 +29,40 @@ namespace TheKingdom
                 if (hours > 5 && hours < 7)
                 {
                     phase = Phase.Dawn;
+                    PhaseChange();
                 }
 
                 if (hours > 7 && hours < 11)
                 {
                     phase = Phase.Morning;
+                    PhaseChange();
                 }
                 
                 if (hours > 11 && hours < 13)
                 {
                     phase = Phase.Noon;
+                    PhaseChange();
                 }
 
                 if (hours > 13 && hours < 17)
                 {
                     phase = Phase.Afternoon;
+                    PhaseChange();
                 }
 
                 if (hours > 17 && hours < 20)
                 {
                     phase = Phase.Dusk;
+                    PhaseChange();
                 }
 
                 if (hours > 21 || hours < 5)
                 {
-                    phase = Phase.Night;
+                    if (phase != Phase.Night)
+                    {
+                        phase = Phase.Night;
+                        PhaseChange();
+                    }
                 }
 
                 if (hours % 25 == 0)
@@ -80,7 +89,20 @@ namespace TheKingdom
                     years++;
                 }
             };            
-        }        
+        }
+
+        public static void PhaseChange()
+        {
+            foreach (BaseBuilding b in GlobalData.CityBuildings)
+            {
+                b.Update();
+            }
+
+            foreach (BaseEvent e in GlobalData.CityEvents)
+            {
+                e.Check();
+            }
+        }
 
         public static void Update()
         {
@@ -92,14 +114,9 @@ namespace TheKingdom
 
             if (SceneManager.state > 4)
             {
-                foreach (BaseBuilding b in GlobalData.CityBuildings)
-                {
-                    b.Update();
-                }
-
                 if (!t.Enabled) t.Start();
             }
-        }        
+        }
     }
 
     public class Check
