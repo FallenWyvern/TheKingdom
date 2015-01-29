@@ -12,3 +12,6 @@ E:\Microsoft Visual Studio 12.0\Projects\TheKingdom\TheKingdom\bin\x86\Debug\The
 E:\Microsoft Visual Studio 12.0\Projects\TheKingdom\TheKingdom\obj\x86\Debug\TheKingdom.exe
 E:\Microsoft Visual Studio 12.0\Projects\TheKingdom\TheKingdom\obj\x86\Debug\TheKingdom.pdb
 E:\Microsoft Visual Studio 12.0\Projects\TheKingdom\TheKingdom\obj\x86\Debug\TheKingdom.csprojResolveAssemblyReference.cache
+D:\TheKingdom\TheKingdom\bin\x86\Debug\TheKingdom.exe.config
+D:\TheKingdom\TheKingdom\obj\x86\Debug\TheKingdom.exe
+D:\TheKingdom\TheKingdom\obj\x86\Debug\TheKingdom.pdb

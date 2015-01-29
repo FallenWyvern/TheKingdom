@@ -29,6 +29,7 @@ namespace TheKingdom
         {
             BrowserManager.awesomiumContext.Send(state =>
             {
+                // Replace these tabs with a new "UI" tab.
                 MainMenu = new TabTypes.MainMenuTab(0, "file:///UI/mainmenu.html", GlobalData.Screen_Width, GlobalData.Screen_Height, 0, 0);
                 Settings = new TabTypes.SettingsTab(0, "file:///UI/settings.html", GlobalData.Screen_Width, GlobalData.Screen_Height, 0, 0);
                 CityView = new TabTypes.CityTab(0, "file:///UI/CityView.html", GlobalData.Screen_Width, GlobalData.Screen_Height, 0, 0);
@@ -44,6 +45,7 @@ namespace TheKingdom
         /// <param name="id"></param>
         public static void ChangeScene(int id)
         {
+            // This should cause the tab to load different files.
             DisableAll();
 
             switch (id)
@@ -102,7 +104,8 @@ namespace TheKingdom
                 }
             }
             else
-            {                
+            {         
+                // UI should render last. Active changes will probably be removed.
                 foreach (BaseTab t in BrowserManager.Tabs.ToList())
                 {
                     try
