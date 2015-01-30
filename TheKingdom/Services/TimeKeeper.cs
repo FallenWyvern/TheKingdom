@@ -106,13 +106,13 @@ namespace TheKingdom
 
         public static void Update()
         {
-            if (SceneManager.state < 5)
+            if (SceneManager.GameState < 5)
             {
                 if (t.Enabled) t.Stop();
                 return;
             }
 
-            if (SceneManager.state > 4)
+            if (SceneManager.GameState > 4)
             {
                 if (!t.Enabled) t.Start();
             }

@@ -5,6 +5,7 @@ using System.Text;
 
 using SFML.Graphics;
 using SFML.Window;
+using TheKingdom;
 using Awesomium.Core;
 using System.Threading.Tasks;
 using System.Threading;
@@ -24,12 +25,11 @@ namespace SFML.Web
     /// </summary>
     public static class BrowserManager
     {
-        public static List<BaseTab> Tabs = new List<BaseTab>();   // List of all tabs.
+        public static List<BrowserTab> Tabs = new List<BrowserTab>();   // List of all tabs.
         public static int CurrentTab = 0;                               // Current tabe we're on.        
         public static SynchronizationContext awesomiumContext = null;   // Used to synchronize multiple tabs.
         private static bool Running = false;                            // Check to determine if we're in use.
-        public static event EventHandler<EventArgs> CheckContext;       // Subscribe to this event to be notified once the engine is ready.                
-        public static BaseTab UI = null;                                // User Interface layer.
+        public static event EventHandler<EventArgs> CheckContext;       // Subscribe to this event to be notified once the engine is ready.                        
         public static bool DraggingUI = false;                          // Are we dragging?
         
         /// <summary>
@@ -106,7 +106,7 @@ namespace SFML.Web
                 return;
             }
 
-            foreach (BaseTab b in Tabs.ToList())
+            foreach (BrowserTab b in Tabs.ToList())
             {
                 if (b.ID == ID)
                 {
@@ -118,7 +118,7 @@ namespace SFML.Web
             awesomiumContext.Post(state =>
             {
                 Console.WriteLine("Creating tab for " + url);
-                BaseTab t = new BaseTab(ID, url, w, h, x, y);                
+                BrowserTab t = new BrowserTab(ID, url, w, h, x, y);                
                 t.Clickable = clickable;
                 t.KeyEvents = keyevent;
                 Tabs.Add(t);
@@ -129,15 +129,15 @@ namespace SFML.Web
         /// New Tab via giving a tab.
         /// </summary>
         /// <param name="tab"></param>
-        public static void NewTab(BaseTab tab)
+        public static void NewTab(BrowserTab tab)
         {
             while (awesomiumContext == null)
             {
                 Console.WriteLine("Context sleeping, waiting for context");
                 return;
             }
-            
-            foreach (BaseTab b in Tabs.ToList())
+
+            foreach (BrowserTab b in Tabs.ToList())
             {
                 if (b.ID == tab.ID)
                 {
@@ -175,9 +175,9 @@ namespace SFML.Web
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static BaseTab FindTabByID(int ID)
+        public static BrowserTab FindTabByID(int ID)
         {
-            foreach (BaseTab t in Tabs)
+            foreach (BrowserTab t in Tabs)
             {
                 if (t.ID == ID)
                 {
@@ -193,9 +193,9 @@ namespace SFML.Web
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static BaseTab FindTabByClick(int x, int y)
-        {            
-            foreach (BaseTab t in Tabs.ToList())
+        public static BrowserTab FindTabByClick(int x, int y)
+        {
+            foreach (BrowserTab t in Tabs.ToList())
             {
                 if (t.MouseOver(x, y))
                 {
@@ -213,9 +213,9 @@ namespace SFML.Web
         /// <param name="y"></param>
         public static void MouseMove(int x, int y)
         {
-            if (UI != null && !DraggingUI)
+            if (SceneManager.UI != null && !DraggingUI)
             {
-                WebCore.QueueWork(UI.MyTab, () => { UI.MyTab.FocusView(); UI.MyTab.InjectMouseMove(x, y); });                                
+                WebCore.QueueWork(SceneManager.UI.MyTab, () => { SceneManager.UI.MyTab.FocusView(); SceneManager.UI.MyTab.InjectMouseMove(x, y); });                                
             }
 
             if (Tabs.Count == 0) return;
@@ -223,7 +223,7 @@ namespace SFML.Web
             if (Mouse.IsButtonPressed(Mouse.Button.Right)) { return; }
             
             DraggingUI = false;
-            foreach (BaseTab t in Tabs.ToList())
+            foreach (BrowserTab t in Tabs.ToList())
             {
                 if (t.MouseOver(x, y) && t.Clickable && !t.closing)
                 {
@@ -239,18 +239,18 @@ namespace SFML.Web
         public static void MouseUp()
         {
             DraggingUI = false;
-            if (UI != null)                
+            if (SceneManager.UI != null)                
             {                
                 awesomiumContext.Send(state =>
                 {
-                    try { UI.MyTab.InjectMouseUp(MouseButton.Left); }
+                    try { SceneManager.UI.MyTab.InjectMouseUp(MouseButton.Left); }
                     catch { Console.WriteLine("UI Cannot be moved"); }
                 }, null);
             }
 
             if (Tabs.Count == 0) return;
 
-            foreach (BaseTab t in Tabs.ToList())
+            foreach (BrowserTab t in Tabs.ToList())
             {
                 if (t.Clickable)
                 {
@@ -273,21 +273,21 @@ namespace SFML.Web
         /// <param name="y"></param>
         public static void MouseDown(int x, int y, SFML.Window.Mouse.Button b)
         {
-            if (UI != null && UI.MouseOver(x, y))
+            if (SceneManager.UI != null && SceneManager.UI.MouseOver(x, y))
             {
                 awesomiumContext.Send(state =>
                 {
-                    try { UI.MyTab.InjectMouseDown(MouseButton.Left); }
+                    try { SceneManager.UI.MyTab.InjectMouseDown(MouseButton.Left); }
                     catch { Console.WriteLine("UI Cannot be moved"); }
                 }, null);
             }
 
             if (Tabs.Count == 0) return;
 
-            List<BaseTab> tablist = Tabs.ToList();
+            List<BrowserTab> tablist = Tabs.ToList();
             tablist.Reverse();
 
-            foreach (BaseTab t in tablist)
+            foreach (BrowserTab t in tablist)
             {
                 if (t.MouseOver(x, y) && t.Clickable && b == Mouse.Button.Left)
                 {                    
@@ -306,7 +306,7 @@ namespace SFML.Web
             if (Mouse.IsButtonPressed(Mouse.Button.Right))
             {
                 if (Tabs.Count == 0) return;
-                foreach (BaseTab t in tablist)
+                foreach (BrowserTab t in tablist)
                 {
                     if (t.MouseOver(x, y))
                     {
@@ -330,7 +330,7 @@ namespace SFML.Web
         public static void InjectKey(Keyboard.Key k, int x, int y)
         {            
             if (Tabs.Count == 0) return;
-            foreach (BaseTab t in Tabs)
+            foreach (BrowserTab t in Tabs)
             {                
                 if (t.MouseOver(x, y) && t.KeyEvents)
                 {                    
@@ -395,7 +395,7 @@ namespace SFML.Web
     /// <summary>
     /// Base tab is the class to inherit new types of tabs from.
     /// </summary>
-    public class BaseTab : IDisposable
+    public class BrowserTab : IDisposable
     {
         public int ID = 0;              // ID of this tab.
         public string url;              // Current URL
@@ -427,7 +427,7 @@ namespace SFML.Web
         /// <param name="h"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public BaseTab(int id, string URL, int w, int h, int x, int y)
+        public BrowserTab(int id, string URL, int w, int h, int x, int y)
         {
             ID = id;
             url = URL;            
