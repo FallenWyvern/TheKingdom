@@ -443,7 +443,7 @@ namespace SFML.Web
             View.Position = new Vector2f((uint)x, (uint)y);            
 
             WebSession session = WebCore.CreateWebSession(new WebPreferences()
-            {
+            {                
                 WebSecurity = false,
                 FileAccessFromFileURL = true,
                 UniversalAccessFromFileURL = true,
@@ -465,8 +465,8 @@ namespace SFML.Web
 
             s.Updated += (sender, e) =>
             {
-                if (!Active) return;
-                UpdateTexture();
+                if (!Active) return;                
+                UpdateTexture();                
             };            
         }
 
@@ -481,15 +481,19 @@ namespace SFML.Web
         /// Updates texture.
         /// </summary>
         public void UpdateTexture()
-        {            
-            unsafe
+        {
+            BrowserManager.awesomiumContext.Send(state =>
             {
-                fixed (Byte* byteptr = webBytes)
+                int sRow = s.RowSpan;
+                unsafe
                 {
-                    s.CopyTo((IntPtr)byteptr, s.RowSpan, 4, true, false);
-                    BrowserTex.Update(webBytes);
+                    fixed (Byte* byteptr = webBytes)
+                    {
+                        s.CopyTo((IntPtr)byteptr, sRow, 4, true, false);
+                        BrowserTex.Update(webBytes);
+                    }
                 }
-            }            
+            }, null);
         }
                 
         /// <summary>
