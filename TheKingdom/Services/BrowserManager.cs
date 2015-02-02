@@ -87,6 +87,7 @@ namespace SFML.Web
             Console.WriteLine("Starting WebCore Engine");
             Running = true;
             WebCore.Run();
+            WebCore.Initialize(new WebConfig());
         }
         
         /// <summary>
@@ -465,8 +466,11 @@ namespace SFML.Web
 
             s.Updated += (sender, e) =>
             {
-                if (!Active) return;                
-                UpdateTexture();                
+                if (!Active) return;
+                for (int i = 0; i < GlobalData.UISmooth; i++)
+                {
+                    UpdateTexture();
+                }
             };            
         }
 
@@ -485,11 +489,13 @@ namespace SFML.Web
             BrowserManager.awesomiumContext.Send(state =>
             {
                 int sRow = s.RowSpan;
+                BitmapSurface temp = s;
+
                 unsafe
                 {
                     fixed (Byte* byteptr = webBytes)
                     {
-                        s.CopyTo((IntPtr)byteptr, sRow, 4, true, false);
+                        temp.CopyTo((IntPtr)byteptr, sRow, 4, true, false);
                         BrowserTex.Update(webBytes);
                     }
                 }

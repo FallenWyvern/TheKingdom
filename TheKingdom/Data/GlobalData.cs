@@ -13,6 +13,7 @@ namespace TheKingdom
         public static int Screen_Width = 1920;
         public static int Screen_Height = 1080;
         public static int Fullscreen = 0;
+        public static int UISmooth = 1;
         public static int MusicVolume = 100;
         public static int SoundVolume = 100;
         public static bool Closing = false;
@@ -46,6 +47,9 @@ namespace TheKingdom
                     case "Game_Volume":
                         SoundVolume = Convert.ToInt32(line.Split(':')[1]);
                         break;
+                    case "UI_Smooth":
+                        UISmooth = Convert.ToInt32(line.Split(':')[1]);
+                        break;
                 }
             }
         }
@@ -57,6 +61,7 @@ namespace TheKingdom
             File.AppendAllText("kingdom.ini", "Fullscreen:" + Fullscreen + Environment.NewLine);
             File.AppendAllText("kingdom.ini", "Music_Volume:" + MusicVolume + Environment.NewLine);
             File.AppendAllText("kingdom.ini", "Sound_Volume:" + SoundVolume + Environment.NewLine);
+            File.AppendAllText("kingdom.ini", "UI_Smooth:" + UISmooth + Environment.NewLine);
         }
     }    
 }

@@ -43,32 +43,85 @@ namespace TheKingdom
 
             void MyTab_LoadingFrameComplete(object sender, FrameEventArgs e)
             {
-                SceneManager.GameState = 0;
+                if (SceneManager.GameState == -1) SceneManager.GameState = 0;
+                if (SceneManager.GameState == 1) 
+                {
+                    CallJS("setData", new JSValue[] { GlobalData.Fullscreen, GlobalData.MusicVolume, GlobalData.SoundVolume, GlobalData.Screen_Width + "x" + GlobalData.Screen_Height });
+                };
             }
 
             public override void Callback(string message)
             {
-                switch (message)
+                Console.WriteLine(SceneManager.GameState + " " + message);
+                switch (SceneManager.GameState)
                 {
-                    case "back":
-                        MyTab.Source = new Uri("file:///UI/MainMenu.html");
+                    case 0:
+                        switch (message)
+                        {
+                            case "back":
+                                SceneManager.ChangeScene(0);
+                                break;
+                            case "settings":
+                                SceneManager.ChangeScene(1);
+                                break;
+                            case "savegame":
+                                SceneManager.ChangeScene(2);
+                                break;
+                            case "loadgame":
+                                SceneManager.ChangeScene(3);
+                                break;
+                            case "newgame":
+                            case "continue":
+                                SceneManager.ChangeScene(4);
+                                break;
+                            case "close":
+                                GlobalData.Closing = true;
+                                break;
+                            default:
+                                break;
+                        }
                         break;
-                    case "settings":
-                        MyTab.Source = new Uri("file:///UI/settings.html");
+                    case 1:
+                        switch (message)
+                        {
+                            case "back":
+                                SceneManager.ChangeScene(0);
+                                break;
+                            default:                        
+                                string[] parameters = message.Split('&');
+                                GlobalData.Screen_Width = Convert.ToInt32(parameters[0].Split('=')[1].Split('x')[0]);
+                                GlobalData.Screen_Height = Convert.ToInt32(parameters[0].Split('=')[1].Split('x')[1]);
+                                GlobalData.Fullscreen = Convert.ToInt32(parameters[1].Split('=')[1]);
+                                GlobalData.MusicVolume = Convert.ToInt32(parameters[2].Split('=')[1]);
+                                GlobalData.SoundVolume = Convert.ToInt32(parameters[3].Split('=')[1]);
+                                GlobalData.SaveSettings();
+                                SceneManager.ChangeScene(0);
+                                break;
+                        }
                         break;
-                    case "savegame":
-                        MyTab.Source = new Uri("file:///UI/savescreen.html");
+                    case 2:
                         break;
-                    case "loadgame":
-                        MyTab.Source = new Uri("file:///UI/loadscreen.html");
+                    case 3:
                         break;
-                    case "continue":                        
+                    case 4:
                         break;
-                    case "close":
-                        GlobalData.Closing = true;
+                    case 5:
                         break;
                     default:
                         break;
+                }
+            }
+
+            public void CallJS(string methodName, JSValue[] args)
+            {
+                JSObject window = MyTab.ExecuteJavascriptWithResult("window");
+
+                if (window == null)
+                    return;
+
+                using (window)
+                {
+                    window.InvokeAsync(methodName, args);
                 }
             }
         }        
